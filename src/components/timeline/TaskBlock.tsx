@@ -104,10 +104,7 @@ export function TaskBlock({
         animatedStyle,
       ]}
     >
-      <Pressable
-        onPress={onPress}
-        accessibilityRole="button"
-        accessibilityLabel={`${occurrence.title}, ${range}${occurrence.isCompleted ? ', completed' : ''}`}
+      <View
         style={{
           flex: 1,
           flexDirection: 'row',
@@ -133,45 +130,52 @@ export function TaskBlock({
             }}
           />
         ) : null}
-        <View
-          style={{
-            width: compact ? 22 : 28,
-            height: compact ? 22 : 28,
-            borderRadius: 14,
-            backgroundColor: colors.surfaceRaised,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: 8,
-          }}
+        <Pressable
+          onPress={onPress}
+          accessibilityRole="button"
+          accessibilityLabel={`${occurrence.title}, ${range}${occurrence.isCompleted ? ', completed' : ''}`}
+          style={{ flex: 1, flexDirection: 'row', alignItems: 'center', minWidth: 0 }}
         >
-          <Ionicons name={iconIon(occurrence.task.iconKey) as never} size={compact ? 12 : 16} color={token.ink} />
-        </View>
-        <View style={{ flex: 1, minWidth: 0 }}>
-          <ThemedText
-            numberOfLines={1}
-            weight="bold"
+          <View
             style={{
-              fontSize: compact ? 12 : 16,
-              color: token.ink,
-              textDecorationLine: occurrence.isCompleted ? 'line-through' : 'none',
+              width: compact ? 22 : 28,
+              height: compact ? 22 : 28,
+              borderRadius: 14,
+              backgroundColor: colors.surfaceRaised,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: 8,
             }}
           >
-            {occurrence.title}
-          </ThemedText>
-          {compact ? null : (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-              <ThemedText numberOfLines={1} style={{ fontSize: 12, color: token.ink, opacity: 0.78 }}>
-                {running ? formatRemaining(remaining) : range}
-              </ThemedText>
-              {occurrence.isRecurring ? (
-                <Ionicons name="repeat" size={12} color={token.ink} />
-              ) : null}
-              {subtaskLabel ? (
-                <ThemedText style={{ fontSize: 11, color: token.ink, opacity: 0.7 }}>{subtaskLabel}</ThemedText>
-              ) : null}
-            </View>
-          )}
-        </View>
+            <Ionicons name={iconIon(occurrence.task.iconKey) as never} size={compact ? 12 : 16} color={token.ink} />
+          </View>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <ThemedText
+              numberOfLines={1}
+              weight="bold"
+              style={{
+                fontSize: compact ? 12 : 16,
+                color: token.ink,
+                textDecorationLine: occurrence.isCompleted ? 'line-through' : 'none',
+              }}
+            >
+              {occurrence.title}
+            </ThemedText>
+            {compact ? null : (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                <ThemedText numberOfLines={1} style={{ fontSize: 12, color: token.ink, opacity: 0.78 }}>
+                  {running ? formatRemaining(remaining) : range}
+                </ThemedText>
+                {occurrence.isRecurring ? (
+                  <Ionicons name="repeat" size={12} color={token.ink} />
+                ) : null}
+                {subtaskLabel ? (
+                  <ThemedText style={{ fontSize: 11, color: token.ink, opacity: 0.7 }}>{subtaskLabel}</ThemedText>
+                ) : null}
+              </View>
+            )}
+          </View>
+        </Pressable>
         <Pressable
           onPress={onComplete}
           hitSlop={8}
@@ -191,7 +195,7 @@ export function TaskBlock({
         >
           {occurrence.isCompleted ? <Ionicons name="checkmark" size={14} color={colors.surfaceRaised} /> : null}
         </Pressable>
-      </Pressable>
+      </View>
     </Animated.View>
   );
 

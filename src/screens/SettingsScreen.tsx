@@ -1,16 +1,18 @@
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { Alert, Linking, Platform, Pressable, ScrollView, Switch, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { requestNotificationPermission } from '../services/notifications';
 import { useAppStore } from '../store/appStore';
 import { useTheme } from '../theme/ThemeProvider';
+import type { RootStackParamList } from '../shell/navigation/types';
 import { IconButton } from '../components/common/IconButton';
 import { PrimaryButton } from '../components/common/PrimaryButton';
 import { ThemedText } from '../components/common/ThemedText';
 
 export function SettingsScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const settings = useAppStore((s) => s.settings);
@@ -35,6 +37,9 @@ export function SettingsScreen() {
         </ThemedText>
       </View>
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48, gap: 8 }}>
+        <Pressable onPress={() => navigation.navigate('Focus')} style={{ minHeight: 44, justifyContent: 'center', marginBottom: 8 }}>
+          <ThemedText tone="accent">Focus timer</ThemedText>
+        </Pressable>
         <ThemedText tone="tertiary">Rhythm</ThemedText>
         <Row label="Week starts Monday">
           <Switch value={settings.weekStart === 1} onValueChange={(value) => updateSettings({ weekStart: value ? 1 : 0 })} />

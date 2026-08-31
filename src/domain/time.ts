@@ -89,17 +89,32 @@ export function formatRemaining(minutes: number): string {
   return `${formatDuration(safe)} remaining`;
 }
 
-export function formatClock(minutes: number, timeFormat: TimeFormat): string {
+function clockParts(minutes: number) {
   const clamped = ((Math.round(minutes) % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY;
   const hours24 = Math.floor(clamped / 60);
   const mins = clamped % 60;
-  const mm = mins.toString().padStart(2, '0');
+  return {
+    hours24,
+    hours12: hours24 % 12 === 0 ? 12 : hours24 % 12,
+    mm: mins.toString().padStart(2, '0'),
+    period: hours24 >= 12 ? 'PM' : 'AM',
+  };
+}
+
+export function formatClock(minutes: number, timeFormat: TimeFormat): string {
+  const parts = clockParts(minutes);
   if (timeFormat === 'h24') {
-    return `${hours24.toString().padStart(2, '0')}:${mm}`;
+    return `${parts.hours24.toString().padStart(2, '0')}:${parts.mm}`;
   }
-  const period = hours24 >= 12 ? 'PM' : 'AM';
-  const hours12 = hours24 % 12 === 0 ? 12 : hours24 % 12;
-  return `${hours12}:${mm} ${period}`;
+  return `${parts.hours12}:${parts.mm} ${parts.period}`;
+}
+
+export function formatHourLabel(minutes: number, timeFormat: TimeFormat): string {
+  const parts = clockParts(minutes);
+  if (timeFormat === 'h24') {
+    return `${parts.hours24.toString().padStart(2, '0')}:00`;
+  }
+  return `${parts.hours12} ${parts.period}`;
 }
 
 export function formatTimeRange(
@@ -108,9 +123,20 @@ export function formatTimeRange(
   timeFormat: TimeFormat,
 ): string {
   const end = startMinutes + durationMinutes;
-  const startLabel = formatClock(startMinutes, timeFormat);
-  const endLabel = formatClock(end, timeFormat);
-  return `${startLabel}–${endLabel} (${formatDuration(durationMinutes)})`;
+  const duration = formatDuration(durationMinutes);
+  if (timeFormat === 'h24') {
+    return `${formatClock(startMinutes, timeFormat)}–${formatClock(end, timeFormat)} (${duration})`;
+  }
+  const start = clockParts(startMinutes);
+  const finish = clockParts(end);
+  if (start.period === finish.period) {
+    return `${start.hours12}:${start.mm}–${finish.hours12}:${finish.mm} ${finish.period} (${duration})`;
+  }
+  return `${start.hours12}:${start.mm} ${start.period}–${finish.hours12}:${finish.mm} ${finish.period} (${duration})`;
+}
+
+export function formatMonth(dateKeyValue: string): string {
+  return format(parseDateKey(dateKeyValue), 'MMMM');
 }
 
 export function formatMonthYear(dateKeyValue: string): string {

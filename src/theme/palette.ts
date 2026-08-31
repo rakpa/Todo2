@@ -27,10 +27,10 @@ export interface Palette {
 }
 
 export const lightPalette: Palette = {
-  background: '#F4F0E8',
-  surface: '#FFFCF7',
+  background: '#F5F2EA',
+  surface: '#FFFCFA',
   surfaceRaised: '#FFFFFF',
-  spine: '#D9D2C5',
+  spine: '#C9C2B6',
   hairline: '#E7E0D4',
   overlay: 'rgba(28, 25, 21, 0.45)',
   accent: '#2F6F6A',

@@ -2,14 +2,16 @@ import type { TimelineDensity, TimedOccurrence } from './types';
 import { MINUTES_PER_DAY } from './types';
 
 export const DENSITY_PIXELS_PER_MINUTE: Record<TimelineDensity, number> = {
-  compact: 1.05,
-  comfortable: 1.55,
-  roomy: 2.25,
+  compact: 1.4,
+  comfortable: 2,
+  roomy: 2.75,
 };
 
 export const MIN_BLOCK_HEIGHT = 52;
-export const TIME_RAIL_WIDTH = 58;
-export const SPINE_GUTTER = 16;
+export const TIME_RAIL_WIDTH = 50;
+export const SPINE_WIDTH = 3;
+export const SPINE_GUTTER = 0;
+export const CAPSULE_MAX_RADIUS = 22;
 
 export function pixelsPerMinute(density: TimelineDensity): number {
   return DENSITY_PIXELS_PER_MINUTE[density];
@@ -58,8 +60,12 @@ function overlaps(a: EventInterval, b: EventInterval): boolean {
   return a.start < b.end && b.start < a.end;
 }
 
+export function capsuleRadius(height: number): number {
+  return Math.min(Math.max(12, height / 2), CAPSULE_MAX_RADIUS);
+}
+
 /**
- * Calendar-style overlap layout: concurrent blocks share width instead of covering.
+ * Concurrent blocks share width so they stay on the spine instead of covering.
  */
 export function layoutDay(
   occurrences: TimedOccurrence[],
@@ -151,14 +157,12 @@ export function layoutDay(
   return { blocks, gaps };
 }
 
-export function tickMinutes(density: TimelineDensity): number {
-  if (density === 'roomy') return 15;
-  if (density === 'comfortable') return 30;
+export function tickMinutes(): number {
   return 60;
 }
 
-export function timeTicks(density: TimelineDensity): number[] {
-  const step = tickMinutes(density);
+export function timeTicks(_density?: TimelineDensity): number[] {
+  const step = tickMinutes();
   const ticks: number[] = [];
   for (let minute = 0; minute < MINUTES_PER_DAY; minute += step) {
     ticks.push(minute);

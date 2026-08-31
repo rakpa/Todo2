@@ -2,6 +2,8 @@ import {
   assertPositiveDuration,
   clampMinutes,
   formatDuration,
+  formatHourLabel,
+  formatMonth,
   formatTimeRange,
   nextFreeSlot,
   nextQuarterHour,
@@ -32,8 +34,19 @@ describe('time math', () => {
   });
 
   test('formats 12-hour ranges with duration', () => {
-    expect(formatTimeRange(7 * 60, 15, 'h12')).toBe('7:00 AM–7:15 AM (15 min)');
+    expect(formatTimeRange(7 * 60, 15, 'h12')).toBe('7:00–7:15 AM (15 min)');
+    expect(formatTimeRange(11 * 60 + 45, 45, 'h12')).toBe('11:45 AM–12:30 PM (45 min)');
     expect(formatDuration(120)).toBe('2 hr');
+  });
+
+  test('hour rail labels stay single-line', () => {
+    expect(formatHourLabel(7 * 60, 'h12')).toBe('7 AM');
+    expect(formatHourLabel(0, 'h12')).toBe('12 AM');
+    expect(formatHourLabel(13 * 60, 'h24')).toBe('13:00');
+  });
+
+  test('day header is the month name, not a calendar title', () => {
+    expect(formatMonth('2026-08-31')).toBe('August');
   });
 
   test('formats 24-hour clocks', () => {

@@ -11,9 +11,10 @@ interface Props {
   badge?: number;
   style?: StyleProp<ViewStyle>;
   size?: number;
+  tone?: 'primary' | 'secondary';
 }
 
-export function IconButton({ name, label, onPress, badge, style, size = 22 }: Props) {
+export function IconButton({ name, label, onPress, badge, style, size = 22, tone = 'primary' }: Props) {
   const { colors } = useTheme();
   return (
     <Pressable
@@ -33,7 +34,7 @@ export function IconButton({ name, label, onPress, badge, style, size = 22 }: Pr
         style,
       ]}
     >
-      <Ionicons name={name} size={size} color={colors.text.primary} />
+      <Ionicons name={name} size={size} color={tone === 'secondary' ? colors.text.secondary : colors.text.primary} />
       {badge && badge > 0 ? (
         <View
           style={{

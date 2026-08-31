@@ -116,7 +116,7 @@ export function OnboardingPager() {
             {APP_NAME}
           </ThemedText>
           <ThemedText weight="bold" style={{ fontSize: 22, marginTop: 16 }}>
-            See the whole day as a timeline, not a checklist.
+            See the whole day as a timeline, not a calendar.
           </ThemedText>
           <ThemedText tone="secondary" style={{ fontSize: 16, marginTop: 12, lineHeight: 22 }}>
             Time-block work, study, home, and busy minds on one vertical spine.
@@ -147,6 +147,7 @@ export function OnboardingPager() {
               isToday
               compact
               interactive={false}
+              contentOffsetMinutes={7 * 60}
             />
           </View>
           <ThemedText style={{ marginBottom: 8 }}>Blocks have a start and a length.</ThemedText>

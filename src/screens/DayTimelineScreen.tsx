@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -10,7 +9,7 @@ import { allDayTasksForDate, expandTasksForDate } from '../domain/recurrence';
 import { collectOverdueIncomplete, replanOverdue } from '../domain/replan';
 import {
   addDaysKey,
-  formatMonthYear,
+  formatMonth,
   nextFreeSlot,
   nextQuarterHour,
   nowMinutesFromMidnight,
@@ -30,7 +29,6 @@ import { EditorSheet } from '../components/editor/EditorSheet';
 import { PlannerSheet } from '../components/planner/PlannerSheet';
 import { Timeline } from '../components/timeline/Timeline';
 import { WeekStrip } from '../components/timeline/WeekStrip';
-import { TodayGlance } from '../components/widgets/TodayGlance';
 
 export function DayTimelineScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -42,7 +40,6 @@ export function DayTimelineScreen() {
   const setSelectedDate = useAppStore((s) => s.setSelectedDate);
   const toggleComplete = useAppStore((s) => s.toggleComplete);
   const moveOccurrence = useAppStore((s) => s.moveOccurrence);
-  const updateSettings = useAppStore((s) => s.updateSettings);
   const [editor, setEditor] = useState<{ taskId?: string; start?: number } | null>(null);
   const [plannerOpen, setPlannerOpen] = useState(false);
   const [now, setNow] = useState(nowMinutesFromMidnight());
@@ -51,6 +48,10 @@ export function DayTimelineScreen() {
   const occurrences = useMemo(() => expandTasksForDate(tasks, selectedDate), [tasks, selectedDate]);
   const allDay = useMemo(() => allDayTasksForDate(tasks, selectedDate), [tasks, selectedDate]);
   const inboxCount = tasks.filter((task) => task.isInbox).length;
+  const overdue = useMemo(
+    () => (selectedDate === today ? collectOverdueIncomplete(occurrences, now, selectedDate) : []),
+    [now, occurrences, selectedDate, today],
+  );
 
   useEffect(() => {
     const handle = setInterval(() => setNow(nowMinutesFromMidnight()), 30000);
@@ -87,14 +88,7 @@ export function DayTimelineScreen() {
       runOnJS(shiftDay)(direction);
     });
 
-  const cycleDensity = () => {
-    const order = ['compact', 'comfortable', 'roomy'] as const;
-    const next = order[(order.indexOf(settings.timelineDensity) + 1) % order.length];
-    updateSettings({ timelineDensity: next });
-  };
-
   const runReplan = async () => {
-    const overdue = collectOverdueIncomplete(occurrences, now, selectedDate);
     if (overdue.length === 0) return;
     const draft = replanOverdue({
       overdue,
@@ -111,18 +105,17 @@ export function DayTimelineScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: insets.top }}>
-      <View style={{ paddingHorizontal: 20, paddingBottom: 8, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <ThemedText weight="bold" style={{ fontSize: 28 }} accessibilityRole="header">
-          {formatMonthYear(selectedDate)}
+      <View style={{ paddingHorizontal: 20, paddingBottom: 4, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <ThemedText weight="bold" style={{ fontSize: 34, letterSpacing: -0.6 }} accessibilityRole="header">
+          {formatMonth(selectedDate)}
         </ThemedText>
-        <View style={{ flexDirection: 'row' }}>
-          <IconButton name="file-tray-outline" label="Inbox" badge={inboxCount} onPress={() => navigation.navigate('Inbox')} />
-          <IconButton name="calendar-outline" label="Week view" onPress={() => navigation.navigate('Week')} />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <IconButton name="file-tray-outline" label="Inbox" badge={inboxCount} tone="secondary" onPress={() => navigation.navigate('Inbox')} />
+          <IconButton name="grid-outline" label="Week view" tone="secondary" onPress={() => navigation.navigate('Week')} />
           {settings.hideAiEntry ? null : (
-            <IconButton name="sparkles-outline" label="Smart plan" onPress={() => setPlannerOpen(true)} />
+            <IconButton name="sparkles-outline" label="Smart plan" tone="secondary" onPress={() => setPlannerOpen(true)} />
           )}
-          <IconButton name="timer-outline" label="Focus timer" onPress={() => navigation.navigate('Focus')} />
-          <IconButton name="settings-outline" label="Settings" onPress={() => navigation.navigate('Settings')} />
+          <IconButton name="settings-outline" label="Settings" tone="secondary" onPress={() => navigation.navigate('Settings')} />
         </View>
       </View>
       <WeekStrip
@@ -133,28 +126,39 @@ export function DayTimelineScreen() {
         timeFormat={settings.timeFormat}
         onSelectDate={setSelectedDate}
       />
-      <TodayGlance occurrences={occurrences} nowMinutes={now} isToday={selectedDate === today} timeFormat={settings.timeFormat} />
       {allDay.length > 0 ? (
-        <ScrollView horizontal style={{ maxHeight: 44, paddingHorizontal: 16 }} showsHorizontalScrollIndicator={false}>
+        <ScrollView horizontal style={{ maxHeight: 40, paddingHorizontal: 16 }} showsHorizontalScrollIndicator={false}>
           {allDay.map((task) => (
             <Pressable
               key={task.id}
               onPress={() => setEditor({ taskId: task.id })}
-              style={{ backgroundColor: colors.chip, borderRadius: 16, paddingHorizontal: 12, height: 32, justifyContent: 'center', marginRight: 8 }}
+              style={{ backgroundColor: colors.chip, borderRadius: 16, paddingHorizontal: 12, height: 28, justifyContent: 'center', marginRight: 8 }}
             >
-              <ThemedText>{task.title}</ThemedText>
+              <ThemedText style={{ fontSize: 13 }}>{task.title}</ThemedText>
             </Pressable>
           ))}
         </ScrollView>
       ) : null}
-      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 12 }}>
-        <Pressable onPress={cycleDensity} accessibilityLabel="Change timeline density" style={{ minHeight: 44, paddingHorizontal: 8, justifyContent: 'center' }}>
-          <Ionicons name="resize-outline" size={18} color={colors.text.secondary} />
+      {overdue.length > 0 ? (
+        <Pressable
+          onPress={runReplan}
+          accessibilityLabel="Replan unfinished tasks"
+          style={{
+            alignSelf: 'flex-start',
+            marginLeft: 20,
+            marginBottom: 4,
+            paddingHorizontal: 12,
+            height: 32,
+            borderRadius: 16,
+            backgroundColor: colors.accentSoft,
+            justifyContent: 'center',
+          }}
+        >
+          <ThemedText tone="accent" style={{ fontSize: 13 }}>
+            Replan {overdue.length} unfinished
+          </ThemedText>
         </Pressable>
-        <Pressable onPress={runReplan} accessibilityLabel="Replan unfinished tasks" style={{ minHeight: 44, paddingHorizontal: 8, justifyContent: 'center' }}>
-          <ThemedText tone="accent" style={{ fontSize: 13 }}>Replan</ThemedText>
-        </Pressable>
-      </View>
+      ) : null}
       <GestureDetector gesture={fling}>
         <View style={{ flex: 1 }}>
           <Timeline
@@ -171,7 +175,6 @@ export function DayTimelineScreen() {
             }}
             onDragEnd={onDragEnd}
             onAddInGap={(start) => openCreate(start)}
-            onCopyInGap={(start) => openCreate(start)}
           />
         </View>
       </GestureDetector>

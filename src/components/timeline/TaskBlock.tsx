@@ -5,6 +5,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { tokenColors } from '../../domain/colorTokens';
 import { iconIon } from '../../domain/icons';
+import { capsuleRadius } from '../../domain/layout';
 import { formatRemaining, formatTimeRange } from '../../domain/time';
 import type { TimeFormat, TimedOccurrence } from '../../domain/types';
 import { useTheme } from '../../theme/ThemeProvider';
@@ -67,6 +68,9 @@ export function TaskBlock({
       ? `${subtasks.filter((item) => item.isCompleted).length}/${subtasks.length}`
       : null;
   const range = formatTimeRange(occurrence.startMinutesFromMidnight, occurrence.durationMinutes, timeFormat);
+  const showMeta = !compact && height >= 56;
+  const iconSize = compact ? 22 : 30;
+  const radius = capsuleRadius(height);
 
   const pan = Gesture.Pan()
     .activateAfterLongPress(180)
@@ -99,7 +103,7 @@ export function TaskBlock({
           left: `${leftPct}%`,
           width: `${widthPct}%`,
           paddingLeft: column > 0 ? 6 : 0,
-          paddingRight: 4,
+          paddingRight: 2,
         },
         animatedStyle,
       ]}
@@ -109,7 +113,7 @@ export function TaskBlock({
           flex: 1,
           flexDirection: 'row',
           alignItems: 'center',
-          borderRadius: 999,
+          borderRadius: radius,
           backgroundColor: token.fill,
           paddingHorizontal: compact ? 8 : 10,
           opacity: occurrence.isCompleted ? 0.55 : 1,
@@ -138,13 +142,13 @@ export function TaskBlock({
         >
           <View
             style={{
-              width: compact ? 22 : 28,
-              height: compact ? 22 : 28,
-              borderRadius: 14,
+              width: iconSize,
+              height: iconSize,
+              borderRadius: iconSize / 2,
               backgroundColor: colors.surfaceRaised,
               alignItems: 'center',
               justifyContent: 'center',
-              marginRight: 8,
+              marginRight: compact ? 6 : 10,
             }}
           >
             <Ionicons name={iconIon(occurrence.task.iconKey) as never} size={compact ? 12 : 16} color={token.ink} />
@@ -163,19 +167,17 @@ export function TaskBlock({
             >
               {occurrence.title}
             </ThemedText>
-            {compact ? null : (
+            {showMeta ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
                 <ThemedText numberOfLines={1} style={{ fontSize: 12, color: token.ink, opacity: 0.78 }}>
                   {running ? formatRemaining(remaining) : range}
                 </ThemedText>
-                {occurrence.isRecurring ? (
-                  <Ionicons name="repeat" size={12} color={token.ink} />
-                ) : null}
+                {occurrence.isRecurring ? <Ionicons name="repeat" size={12} color={token.ink} /> : null}
                 {subtaskLabel ? (
                   <ThemedText style={{ fontSize: 11, color: token.ink, opacity: 0.7 }}>{subtaskLabel}</ThemedText>
                 ) : null}
               </View>
-            )}
+            ) : null}
           </View>
         </Pressable>
         <Pressable

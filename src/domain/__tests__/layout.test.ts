@@ -1,4 +1,4 @@
-import { heightForDuration, layoutDay, yForMinutes } from '../layout';
+import { capsuleRadius, heightForDuration, layoutDay, timeTicks, yForMinutes } from '../layout';
 import type { Task, TimedOccurrence } from '../types';
 
 function occ(partial: Partial<TimedOccurrence> & { start: number; duration: number; id: string }): TimedOccurrence {
@@ -29,8 +29,22 @@ describe('timeline layout', () => {
   });
 
   test('y position is deterministic from start + zoom', () => {
-    expect(yForMinutes(60, 'compact')).toBe(60 * 1.05);
-    expect(yForMinutes(60, 'roomy')).toBe(60 * 2.25);
+    expect(yForMinutes(60, 'compact')).toBe(60 * 1.4);
+    expect(yForMinutes(60, 'comfortable')).toBe(60 * 2);
+    expect(yForMinutes(60, 'roomy')).toBe(60 * 2.75);
+  });
+
+  test('hour rail is hourly, not a calendar grid of 15/30 minute ticks', () => {
+    expect(timeTicks('comfortable')).toEqual(timeTicks('compact'));
+    expect(timeTicks('comfortable')[0]).toBe(0);
+    expect(timeTicks('comfortable')[1]).toBe(60);
+    expect(timeTicks('comfortable')).toHaveLength(24);
+  });
+
+  test('short blocks are pills and tall blocks keep a capsule radius', () => {
+    expect(capsuleRadius(52)).toBe(22);
+    expect(capsuleRadius(240)).toBe(22);
+    expect(capsuleRadius(20)).toBe(12);
   });
 
   test('overlapping blocks get separate columns instead of covering', () => {

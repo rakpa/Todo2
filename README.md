@@ -10,7 +10,7 @@ Most planners give you a blank list. Dayline gives you time. Every scheduled blo
 
 ## Stack
 
-- Expo SDK 57, React Native, TypeScript
+- Expo SDK 54, React Native, TypeScript
 - React Navigation native stack
 - Zustand + SQLite (`expo-sqlite`) as the durable local store, with an in-memory fallback for tests and environments where SQLite cannot open
 - date-fns / date-fns-tz

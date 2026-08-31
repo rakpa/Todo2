@@ -3,7 +3,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { RootStackParamList } from '../app/navigation/types';
+import type { RootStackParamList } from '../shell/navigation/types';
 import { expandTasksForDate } from '../domain/recurrence';
 import { nowMinutesFromMidnight, weekDateKeys, weekdayLabels } from '../domain/time';
 import { useAppStore } from '../store/appStore';

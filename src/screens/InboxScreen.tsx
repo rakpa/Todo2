@@ -3,7 +3,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { FlatList, Pressable, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { RootStackParamList } from '../app/navigation/types';
+import type { RootStackParamList } from '../shell/navigation/types';
 import { formatDuration } from '../domain/time';
 import { iconIon } from '../domain/icons';
 import { Ionicons } from '@expo/vector-icons';

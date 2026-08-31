@@ -22,7 +22,7 @@ import { yForMinutes } from '../domain/layout';
 import { tap } from '../services/haptics';
 import { useAppStore } from '../store/appStore';
 import { useTheme } from '../theme/ThemeProvider';
-import type { RootStackParamList } from '../app/navigation/types';
+import type { RootStackParamList } from '../shell/navigation/types';
 import { FAB } from '../components/common/FAB';
 import { IconButton } from '../components/common/IconButton';
 import { ThemedText } from '../components/common/ThemedText';

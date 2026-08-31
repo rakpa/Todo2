@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "Dayline",
+    "slug": "dayline",
+    "scheme": "dayline",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.dayline.planner",
+      "icon": "./assets/icon.png",
+      "infoPlist": {
+        "NSCalendarsUsageDescription": "Dayline can place calendar events on the same timeline as your blocks. Access is optional and stays on device.",
+        "NSCalendarsFullAccessUsageDescription": "Dayline can place calendar events on the same timeline as your blocks. Access is optional and stays on device.",
+        "NSUserNotificationsUsageDescription": "Dayline can ping you when a block starts, a reminder fires, or a focus timer ends."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#F3EEE6",
+        "foregroundImage": "./assets/icon.png"
+      },
+      "package": "app.dayline.planner",
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "name": "Dayline",
+      "shortName": "Dayline",
+      "themeColor": "#2F6F6A",
+      "backgroundColor": "#F4F0E8"
+    },
+    "plugins": [
+      "expo-sqlite",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#F3EEE6",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "dark": {
+            "backgroundColor": "#161411",
+            "image": "./assets/splash-icon-dark.png"
+          }
+        }
+      ],
+      "expo-font",
+      "expo-notifications",
+      "@react-native-community/datetimepicker"
+    ]
+  }
+}

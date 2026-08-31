@@ -157,6 +157,8 @@ export function TaskBlock({
                 fontSize: compact ? 12 : 16,
                 color: token.ink,
                 textDecorationLine: occurrence.isCompleted ? 'line-through' : 'none',
+                textDecorationColor: token.ink,
+                opacity: occurrence.isCompleted ? 0.72 : 1,
               }}
             >
               {occurrence.title}
